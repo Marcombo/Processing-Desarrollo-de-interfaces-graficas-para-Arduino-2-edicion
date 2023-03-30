@@ -1,0 +1,58 @@
+import gab.opencv.*;
+import java.awt.Rectangle;
+
+PImage img;
+OpenCV opencv;
+
+int umbral = 127;
+PFont fuente;
+ArrayList<Contour> contornos;
+Rectangle rect;
+
+void setup() {
+  img = loadImage("figurasGeometricas.png"); 
+  size(945, 302);
+  opencv = new OpenCV(this, img);
+  
+  fuente = createFont("Arial Bold", 24);
+  textFont(fuente);
+}
+
+void draw() {
+  background(255);
+  
+  opencv.loadImage(img);
+  opencv.threshold(umbral);
+  contornos = opencv.findContours();
+  
+  image(img, 0, 0);
+  pintaContornos();
+  escribeUmbral();
+}
+
+void pintaContornos(){
+  noFill();
+  strokeWeight(3);
+  stroke(0, 255, 0);
+  
+  for (Contour contorno : contornos){
+    rect = contorno.getBoundingBox();
+    rect(rect.x, rect.y, rect.width, rect.height);
+  }
+}
+
+void escribeUmbral(){
+  fill(0);
+  text(umbral, 4, 24);
+}
+
+void keyPressed(){
+  if (key == CODED){
+    switch(keyCode){
+      case LEFT:  umbral--; break;
+      case RIGHT: umbral++; break;
+    }
+  }
+  if (umbral > 255) umbral = 255;
+  if (umbral < 0) umbral = 0;
+}
